@@ -9,15 +9,15 @@ var optimist = require('optimist');
 module.exports = generate;
 
 var FORMATS = {
-  'json': {template: 'json.template', extension: 'json', trim: false},
-  'jsonarray': {template: 'jsonarray.template', extension: 'json', trim: false},
-  'pixi.js': {template: 'json.template', extension: 'json', trim: true},
-  'starling': {template: 'starling.template', extension: 'xml', trim: true},
-  'sparrow': {template: 'starling.template', extension: 'xml', trim: true},
-  'easel.js': {template: 'easeljs.template', extension: 'json', trim: false},
-  'cocos2d': {template: 'cocos2d.template', extension: 'plist', trim: false},
-  'css': {template: 'css.template', extension: 'css', trim: false},
-  'kiwi': {template: 'kiwi.template', extension: 'json', trim: false}
+  'json': { template: 'json.template', extension: 'json', trim: false },
+  'jsonarray': { template: 'jsonarray.template', extension: 'json', trim: false },
+  'pixi.js': { template: 'json.template', extension: 'json', trim: true },
+  'starling': { template: 'starling.template', extension: 'xml', trim: true },
+  'sparrow': { template: 'starling.template', extension: 'xml', trim: true },
+  'easel.js': { template: 'easeljs.template', extension: 'json', trim: false },
+  'cocos2d': { template: 'cocos2d.template', extension: 'plist', trim: false },
+  'css': { template: 'css.template', extension: 'css', trim: false },
+  'kiwi': { template: 'kiwi.template', extension: 'json', trim: false }
 };
 
 if (!module.parent) {
@@ -121,8 +121,12 @@ if (!module.parent) {
       describe: 'resizes all source images to a specific height',
       default: 0
     })
-    .options('skipSurfix', {
-      describe: 'skips numbering surfix',
+    .options('skipNumbering', {
+      describe: 'skips numbering',
+      default: 0
+    })
+    .options('exclusion', {
+      describe: 'excludes specified files (relative path)',
       default: 0
     })
     .demand(1)
@@ -167,7 +171,7 @@ function generate(files, options, callback) {
 
   options = options || {};
   if (Array.isArray(options.format)) {
-    options.format = options.format.map(function(x){return FORMATS[x]});
+    options.format = options.format.map(function (x) { return FORMATS[x] });
   }
   else if (options.format || !options.customFormat) {
     options.format = [FORMATS[options.format] || FORMATS['json']];
@@ -188,7 +192,24 @@ function generate(files, options, callback) {
   options.gutter = options.hasOwnProperty('gutter') ? parseInt(options.gutter, 10) : 0;
   options.resizeWidth = options.hasOwnProperty('resizeWidth') ? parseInt(options.resizeWidth, 10) : 0;
   options.resizeHeight = options.hasOwnProperty('resizeHeight') ? parseInt(options.resizeHeight, 10) : 0;
-  options.skipSurfix = options.hasOwnProperty('skipSurfix') ? options.skipSurfix : 0;
+  options.skipNumbering = options.hasOwnProperty('skipNumbering') ? options.skipNumbering : false;
+  options.exclusion = options.hasOwnProperty('exclusion') ? options.exclusion : [];
+
+  var exclusion = [];
+  exclusion = options.exclusion.map(function (item, index) {
+    var resolvedItem = path.resolve(item);
+    //console.log(resolvedItem);
+    return resolvedItem;
+  });
+
+  files = files.filter(function (item, index) {
+    var resolvedItem = path.resolve(item);
+    for (var i in exclusion)
+      if (exclusion[i] == resolvedItem)
+        return false;
+
+    return true;
+  });
 
   var fileHash = {};
   files = files.map(function (item, index) {
@@ -200,22 +221,27 @@ function generate(files, options, callback) {
     else {
       name = options.prefix + resolvedItem.substring(resolvedItem.lastIndexOf(path.sep) + 1, resolvedItem.lastIndexOf('.'));
     }
+
+    //console.log(resolvedItem);
     fileHash[resolvedItem] = {
       index: index,
       path: resolvedItem,
       name: name,
       extension: path.extname(resolvedItem)
     };
+
     return fileHash[resolvedItem];
   });
 
-  if (options.group){
+  //console.log(files);
+
+  if (options.group) {
     options.group = Array.isArray(options.group) ? options.group : [options.group];
     options.groups = [];
-    options.group.forEach(function(groupFiles){
+    options.group.forEach(function (groupFiles) {
       groupFiles = Array.isArray(groupFiles) ? groupFiles : glob.sync(groupFiles);
       var groupItems = [];
-      groupFiles.forEach(function(item){
+      groupFiles.forEach(function (item) {
         var groupId = options.groups.length;
         var resolvedItem = path.resolve(item);
         if (fileHash.hasOwnProperty(resolvedItem)) {
@@ -244,12 +270,14 @@ function generate(files, options, callback) {
       generator.determineCanvasSize(files, options, callback);
     },
     function (options, callback) {
+      //console.log(options);
       var n = 0;
       var ow = options.width;
       var oh = options.height;
       var baseName = options.name;
-      async.each(options.atlases, function(atlas, done){
-        options.name = atlas.name = baseName + (options.skipSurfix ? '' : '-' + (++n));
+      async.each(options.atlases, function (atlas, done) {
+        n++;
+        options.name = atlas.name = baseName + (options.skipNumbering ? '' : '-' + n);
         options.width = atlas.width;
         options.height = atlas.height;
         generator.generateImage(atlas.files, options, done);
@@ -263,8 +291,9 @@ function generate(files, options, callback) {
       var ow = options.width;
       var oh = options.height;
       var baseName = options.name;
-      async.each(options.atlases, function(atlas, done){
-        options.name = baseName + (options.skipSurfix ? '' : '-' + (++n)); 
+      async.each(options.atlases, function (atlas, done) {
+        n++;
+        options.name = baseName + (options.skipNumbering ? '' : '-' + n);
         options.width = atlas.width;
         options.height = atlas.height;
         generator.generateData(atlas.files, options, done);
