@@ -69,7 +69,8 @@ Generate high quality texture atlases in Node.js, developed for [Gamefroot.com](
 ###Installation###
 
 1. Install [ImageMagick](http://www.imagemagick.org/)
-2. ```npm install gamefroot-texture-packer -g```
+2. ```npm i andyremi/mirror.gfpack```
+(original: npm install gamefroot-texture-packer -g)
 
 ###Test###
 
