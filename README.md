@@ -83,6 +83,6 @@ This library is based on the foundation work of [Spritesheet.js](https://github.
 
 Added below options)
 
-* "skipNumbering": skips numbering with surfix
-* "exclusion": excludes specified files while making atlas
+* "skipNumbering": (true/false) skips numbering with surfix
+* "exclusion": ([relative path list]) excludes specified files while making atlas
 
