@@ -77,3 +77,13 @@ Generate high quality texture atlases in Node.js, developed for [Gamefroot.com](
 
 --------------
 This library is based on the foundation work of [Spritesheet.js](https://github.com/krzysztof-o/spritesheet.js)
+
+
+--------------
+Modified by Andy Remi.
+Comment:
+Added below options)
+
+"skipNumbering": skips numbering with surfix
+"exclusion": excludes specified files while making atlas
+
