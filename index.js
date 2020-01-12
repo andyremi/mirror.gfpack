@@ -249,7 +249,7 @@ function generate(files, options, callback) {
       var oh = options.height;
       var baseName = options.name;
       async.each(options.atlases, function(atlas, done){
-        options.name = atlas.name = baseName + (options.skipSurfix ? '' : + '-' + (++n));
+        options.name = atlas.name = baseName + (options.skipSurfix ? '' : '-' + (++n));
         options.width = atlas.width;
         options.height = atlas.height;
         generator.generateImage(atlas.files, options, done);
@@ -264,7 +264,7 @@ function generate(files, options, callback) {
       var oh = options.height;
       var baseName = options.name;
       async.each(options.atlases, function(atlas, done){
-        options.name = baseName + (options.skipSurfix ? '' : + '-' + (++n)); 
+        options.name = baseName + (options.skipSurfix ? '' : '-' + (++n)); 
         options.width = atlas.width;
         options.height = atlas.height;
         generator.generateData(atlas.files, options, done);
