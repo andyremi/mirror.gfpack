@@ -64,16 +64,26 @@ Generate high quality texture atlases in Node.js, developed for [Gamefroot.com](
 
       console.log('spritesheet successfully generated');
     });
-  ```
+    ```
 
 ###Installation###
+
 1. Install [ImageMagick](http://www.imagemagick.org/)
-2. ```npm install gamefroot-texture-packer -g```
+2. ```npm i andyremi/mirror.gfpack```<br>
+(original: npm install gamefroot-texture-packer -g)
 
 ###Test###
 
     mocha test
 
-
 --------------
 This library is based on the foundation work of [Spritesheet.js](https://github.com/krzysztof-o/spritesheet.js)
+
+--------------
+### Modified by Andy Remi ###
+
+Added below options)
+
+* "skipNumbering": (true/false) skips numbering with surfix
+* "exclusion": ([relative path list]) excludes specified files while making atlas
+
